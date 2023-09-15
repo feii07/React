@@ -10,7 +10,7 @@ const Post = (props) => {
                     <p className="text-muted">{props.data.body}</p>
                 </div>
                 <button className="btn btn-danger" onClick={ () =>props.remove(props.data.id)}> Remove </button>
-                <button className="btn btn-info" onClick={ () =>props.update(props.data.id)}> Update </button>
+                <button className="btn btn-info" onClick={ () =>props.update(props.data)}> Update </button>
             </div>
         </div>
     )

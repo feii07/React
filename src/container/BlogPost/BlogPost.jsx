@@ -10,11 +10,24 @@ class BlogPost extends Component {
             title: '',
             body: '',
             userId: ''
-        }
+        },
+        isUpdate: false
     }
 
     componentDidMount(){
         this.getPostAPI();   
+    }
+
+    defaultBlogPost = () => {
+        this.setState({
+            isUpdate: false,
+            formBlogPost: {
+                id: 1,
+                title: '',
+                body: '',
+                userId: ''
+            }, 
+        })
     }
 
     getPostAPI = () => {
@@ -37,26 +50,64 @@ class BlogPost extends Component {
         let timestamp = new Date().getTime();
 
         formBlogPostNew[event.target.name] = event.target.value;
-        formBlogPostNew['id'] = timestamp;
+
+        if (!this.state.isUpdate)
+        {
+            formBlogPostNew['id'] = timestamp;
+        }
 
         this.setState({
             formBlogPost: formBlogPostNew
         },() => {
-            console.log(this.state.formBlogPost)
         })
     }
 
-    handleUpdate = () => {
+    handleUpdate = (data) => {
+        this.setState({
+            formBlogPost: data,
+            isUpdate: true
+        })
         
     }
 
+    putDataToAPI = () => {
+        axios.put(`http://localhost:3004/posts/${this.state.formBlogPost.id}`, this.state.formBlogPost).then((res) => {
+            this.getPostAPI();
+            this.setState({
+                isUpdate: false,
+                formBlogPost: {
+                    id: 1,
+                    title: '',
+                    body: '',
+                    userId: ''
+                }, 
+            })
+            
+        })
+    }
+
     handleSubmit = () => {
-        this.postDataToAPI();
+        if (this.state.isUpdate)
+        {
+            this.putDataToAPI();
+        } else {
+            this.postDataToAPI();
+
+        }
     }
 
     postDataToAPI = () => {
         axios.post(`http://localhost:3004/posts`, this.state.formBlogPost).then((res) => {
             this.getPostAPI();
+            this.setState({
+                isUpdate: false,
+                formBlogPost: {
+                    id: 1,
+                    title: '',
+                    body: '',
+                    userId: ''
+                }, 
+            })
         })
     }
 
@@ -69,8 +120,8 @@ class BlogPost extends Component {
                     </div>
                     <div className='row'>
                         <div className='form-group'>
-                            <input type='text' className='form-control' name="title" placeholder='Add Title' onChange={this.handleInput}/>
-                            <textarea name="body" className="form-control" cols="30" rows="10" onChange={this.handleInput}/>
+                            <input type='text' className='form-control' name="title" placeholder='Add Title' onChange={this.handleInput} value={this.state.formBlogPost.title}/>
+                            <textarea name="body" className="form-control" cols="30" rows="10" onChange={this.handleInput} value={this.state.formBlogPost.body}/>
                         <button className='btn btn-primary' onClick={this.handleSubmit}>Simpan</button>
                         </div>
                     </div>
